@@ -1,0 +1,10 @@
+{
+  "category": {
+    "test_macro_f1_full": 0.2751448131990027,
+    "n_test": 4287
+  },
+  "priority": {
+    "test_macro_f1_full": 0.4306016921828016,
+    "n_test": 4287
+  }
+}

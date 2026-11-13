@@ -151,3 +151,45 @@ stages:
       hash: md5
       md5: 385f91ffeec65db081afea88f72fbf3d
       size: 130
+  distilbert:
+    cmd: python -m src.models.distilbert_train
+    deps:
+    - path: data/processed/tickets_test.parquet
+      hash: md5
+      md5: ee0526a43e1ba60b0137b553cb54250c
+      size: 1881803
+    - path: data/processed/tickets_train.parquet
+      hash: md5
+      md5: 74d7ac4346da63cf78fe446ac5ad959a
+      size: 8602635
+    - path: data/processed/tickets_val.parquet
+      hash: md5
+      md5: 2ef2513dacce5edb776eb43ad5965088
+      size: 1844462
+    - path: src/models/distilbert_train.py
+      hash: md5
+      md5: 879794906a2417b882fe88e7f7445027
+      size: 10736
+    outs:
+    - path: models/distilbert_category/final
+      hash: md5
+      md5: 32c3942975fdf5e20b568aaf1ff70caf.dir
+      size: 268575552
+      nfiles: 5
+    - path: models/distilbert_priority/final
+      hash: md5
+      md5: cb3f9fafa0f887cf5f611ae3b94c818f.dir
+      size: 268553740
+      nfiles: 5
+    - path: reports/figures/distilbert_category_confusion_matrix.png
+      hash: md5
+      md5: 3d98c4f3a58b972e575eca6e1721879b
+      size: 143776
+    - path: reports/figures/distilbert_priority_confusion_matrix.png
+      hash: md5
+      md5: da19e29e874abe57642fe314445c50b2
+      size: 36531
+    - path: reports/metrics/distilbert_metrics.json
+      hash: md5
+      md5: 884aee1aa39634d367fbad3488f6d565
+      size: 183
