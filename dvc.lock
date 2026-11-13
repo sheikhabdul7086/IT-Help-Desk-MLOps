@@ -1,0 +1,99 @@
+schema: '2.0'
+stages:
+  data_pipeline:
+    cmd: python -m src.data.run_phase1
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 7479fa87d9142fe5f8fe92438a2eeeab.dir
+      size: 61248472
+      nfiles: 5
+    - path: src/data/clean.py
+      hash: md5
+      md5: ebd1b9b8db73be504a57c2d14d53b52c
+      size: 2300
+    - path: src/data/eda.py
+      hash: md5
+      md5: 3c5d8e7974acf136a58a36ca50ffbfe5
+      size: 1647
+    - path: src/data/ingest.py
+      hash: md5
+      md5: 8517d39046ec1bcef88da895c9d0160e
+      size: 1255
+    - path: src/data/run_phase1.py
+      hash: md5
+      md5: b399fccdfc8b47be1e16662a3dfc28ec
+      size: 1479
+    - path: src/data/split.py
+      hash: md5
+      md5: 1fad18912221ad00c61e4a95206d6e5d
+      size: 1420
+    - path: src/data/validate.py
+      hash: md5
+      md5: f9190795c4903d0de3e835faae9beb18
+      size: 2249
+    outs:
+    - path: data/interim/tickets_ingested.parquet
+      hash: md5
+      md5: f291b13b999e5a39486152d04b6f9f91
+      size: 11948731
+    - path: data/processed/tickets_clean.parquet
+      hash: md5
+      md5: c5621a4ada844a6cbc8cf66aadf4586e
+      size: 12018034
+    - path: data/processed/tickets_test.parquet
+      hash: md5
+      md5: ee0526a43e1ba60b0137b553cb54250c
+      size: 1881803
+    - path: data/processed/tickets_train.parquet
+      hash: md5
+      md5: 74d7ac4346da63cf78fe446ac5ad959a
+      size: 8602635
+    - path: data/processed/tickets_val.parquet
+      hash: md5
+      md5: 2ef2513dacce5edb776eb43ad5965088
+      size: 1844462
+    - path: reports/figures/eda_overview.png
+      hash: md5
+      md5: d088e1ad0e0b2b29afcb9ffaad1f06a0
+      size: 99499
+  baseline:
+    cmd: python -m src.models.baseline
+    deps:
+    - path: data/processed/tickets_test.parquet
+      hash: md5
+      md5: ee0526a43e1ba60b0137b553cb54250c
+      size: 1881803
+    - path: data/processed/tickets_train.parquet
+      hash: md5
+      md5: 74d7ac4346da63cf78fe446ac5ad959a
+      size: 8602635
+    - path: data/processed/tickets_val.parquet
+      hash: md5
+      md5: 2ef2513dacce5edb776eb43ad5965088
+      size: 1844462
+    - path: src/models/baseline.py
+      hash: md5
+      md5: 3f4e17cea60447b02a1fd2b39c36e1e5
+      size: 4502
+    outs:
+    - path: models/baseline_category.joblib
+      hash: md5
+      md5: b0fe5300d485398722b69d9b3e5c0e10
+      size: 2453020
+    - path: models/baseline_priority.joblib
+      hash: md5
+      md5: 0a4a9d9b06daf505fd5cc61da8158792
+      size: 1332788
+    - path: reports/figures/baseline_category_confusion_matrix.png
+      hash: md5
+      md5: d5f0645506e5462bfb0f54522268418b
+      size: 141599
+    - path: reports/figures/baseline_priority_confusion_matrix.png
+      hash: md5
+      md5: 3e77dde43fdceac0daeb6a673303a68d
+      size: 38200
+    - path: reports/metrics/baseline_metrics.json
+      hash: md5
+      md5: 117512380509d8d9dc49d2d3533d44ef
+      size: 215

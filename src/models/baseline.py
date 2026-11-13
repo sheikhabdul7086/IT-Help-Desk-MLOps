@@ -6,6 +6,9 @@ fine-tuned DistilBERT run can be benchmarked against this baseline.
 """
 from pathlib import Path
 
+import json
+
+import joblib
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -20,10 +23,14 @@ from sklearn.metrics import (
 )
 from sklearn.pipeline import Pipeline
 
+from ..common.mlflow_utils import setup_mlflow
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 FIG_DIR = PROJECT_ROOT / "reports" / "figures"
 MLFLOW_DIR = PROJECT_ROOT / "mlruns"
+MODEL_DIR = PROJECT_ROOT / "models"
+METRICS_DIR = PROJECT_ROOT / "reports" / "metrics"
 
 TARGETS = ["category", "priority"]
 
@@ -92,6 +99,9 @@ def train_and_log(target: str, train_df: pd.DataFrame, val_df: pd.DataFrame, tes
 
         mlflow.sklearn.log_model(pipeline, artifact_path=f"model_{target}")
 
+        MODEL_DIR.mkdir(parents=True, exist_ok=True)
+        joblib.dump(pipeline, MODEL_DIR / f"baseline_{target}.joblib")
+
         print(f"[{target}] val_macro_f1={val_macro_f1:.4f} test_macro_f1={test_macro_f1:.4f}")
         print(report)
 
@@ -100,13 +110,15 @@ def train_and_log(target: str, train_df: pd.DataFrame, val_df: pd.DataFrame, tes
 
 def main():
     FIG_DIR.mkdir(parents=True, exist_ok=True)
-    MLFLOW_DIR.mkdir(parents=True, exist_ok=True)
-    mlflow.set_tracking_uri(f"sqlite:///{(MLFLOW_DIR / 'mlflow.db').as_posix()}")
-    mlflow.set_experiment("it-helpdesk-baseline")
+    setup_mlflow("it-helpdesk-baseline")
 
     train_df, val_df, test_df = load_split("train"), load_split("val"), load_split("test")
 
     results = [train_and_log(target, train_df, val_df, test_df) for target in TARGETS]
+
+    METRICS_DIR.mkdir(parents=True, exist_ok=True)
+    metrics_json = {r["target"]: {"val_macro_f1": r["val_macro_f1"], "test_macro_f1": r["test_macro_f1"]} for r in results}
+    (METRICS_DIR / "baseline_metrics.json").write_text(json.dumps(metrics_json, indent=2))
 
     print("\nBaseline summary:")
     for r in results:

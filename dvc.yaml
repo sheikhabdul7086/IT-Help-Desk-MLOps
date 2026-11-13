@@ -1,0 +1,73 @@
+stages:
+  data_pipeline:
+    cmd: python -m src.data.run_phase1
+    deps:
+      - data/raw
+      - src/data/ingest.py
+      - src/data/clean.py
+      - src/data/validate.py
+      - src/data/eda.py
+      - src/data/split.py
+      - src/data/run_phase1.py
+    outs:
+      - data/interim/tickets_ingested.parquet
+      - data/processed/tickets_clean.parquet
+      - data/processed/tickets_train.parquet
+      - data/processed/tickets_val.parquet
+      - data/processed/tickets_test.parquet
+      - reports/figures/eda_overview.png
+
+  baseline:
+    cmd: python -m src.models.baseline
+    deps:
+      - data/processed/tickets_train.parquet
+      - data/processed/tickets_val.parquet
+      - data/processed/tickets_test.parquet
+      - src/models/baseline.py
+    outs:
+      - models/baseline_category.joblib
+      - models/baseline_priority.joblib
+      - reports/figures/baseline_category_confusion_matrix.png
+      - reports/figures/baseline_priority_confusion_matrix.png
+    metrics:
+      - reports/metrics/baseline_metrics.json:
+          cache: false
+
+  distilbert:
+    cmd: python -m src.models.distilbert_train
+    deps:
+      - data/processed/tickets_train.parquet
+      - data/processed/tickets_val.parquet
+      - data/processed/tickets_test.parquet
+      - src/models/distilbert_train.py
+    outs:
+      - models/distilbert_category/final
+      - models/distilbert_priority/final
+      - reports/figures/distilbert_category_confusion_matrix.png
+      - reports/figures/distilbert_priority_confusion_matrix.png
+    metrics:
+      - reports/metrics/distilbert_metrics.json:
+          cache: false
+
+  rag_index:
+    cmd: python -m src.rag.build_index
+    deps:
+      - data/processed/tickets_train.parquet
+      - src/rag/build_index.py
+      - configs/rag.yaml
+    outs:
+      - data/vector_store
+
+  rag_eval:
+    cmd: python -m src.rag.evaluate
+    deps:
+      - data/vector_store
+      - data/processed/tickets_test.parquet
+      - src/rag/generate.py
+      - src/rag/evaluate.py
+      - configs/rag.yaml
+    metrics:
+      - reports/metrics/rag_metrics.json:
+          cache: false
+    outs:
+      - reports/figures/rag_eval_detail.csv

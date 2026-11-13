@@ -1,0 +1,38 @@
+# Phase 4 RAG configuration — versioned via DVC so retrieval/prompt changes are tracked.
+embedding_model: sentence-transformers/all-MiniLM-L6-v2
+vector_store_dir: data/vector_store
+collection_name: resolved_tickets
+top_k: 3
+index_source_split: train
+index_max_docs: 5000
+
+llm_backend: xai   # xai | groq | local_hf | extractive
+# xai: Grok via x.ai's OpenAI-compatible API, rotating across the keys in
+#   XAI_API_KEYS (project/.env, gitignored — never commit real keys).
+# local_hf (flan-t5-small/base) was tried and tends to just echo the retrieved
+#   context instead of synthesizing new steps on this dataset/prompt — small
+#   instruction models aren't reliable enough for this task.
+# extractive adapts the single best-matching past resolution into a clean
+#   numbered playbook — deterministic, always coherent, zero dependencies.
+xai_model: grok-3-mini
+local_hf_model: google/flan-t5-base
+groq_model: llama-3.1-8b-instant
+max_new_tokens: 300
+
+prompt_template: |
+  You are an IT helpdesk resolution assistant. A new support ticket has come in.
+  Use the similar past tickets and their resolutions below as reference, but write a
+  fresh, structured troubleshooting playbook for the NEW ticket only.
+
+  New ticket category: {category}
+  New ticket priority: {priority}
+  New ticket:
+  {ticket_text}
+
+  Similar past resolutions:
+  {retrieved_context}
+
+  Write the response as:
+  1) Likely root cause (1-2 sentences)
+  2) Step-by-step troubleshooting checklist (3-6 numbered steps)
+  3) Escalation note (when to escalate, if applicable)

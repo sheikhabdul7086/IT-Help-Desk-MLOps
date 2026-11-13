@@ -1,0 +1,6 @@
+{
+  "rouge_l_mean": 0.24282325139589522,
+  "cosine_sim_mean": 0.5147767387330532,
+  "n_samples": 30,
+  "llm_backend": "xai"
+}

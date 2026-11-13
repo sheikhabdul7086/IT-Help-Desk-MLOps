@@ -7,5 +7,21 @@ mlflow.db
 .env
 *.egg-info/
 
-# DVC tracks data/raw and data/processed via data/.gitignore
+# DVC tracks data/raw, data/processed, data/vector_store via dvc.yaml/.dvc files
 /data/interim/
+/data/vector_store/
+/data/helpdesk.db
+
+# model weights are never committed to git (DVC/MLflow track these)
+/models/
+
+# pipeline-generated figures tracked by DVC (dvc.yaml outs), not git
+/reports/figures/eda_overview.png
+/reports/figures/baseline_category_confusion_matrix.png
+/reports/figures/baseline_priority_confusion_matrix.png
+/reports/figures/distilbert_category_confusion_matrix.png
+/reports/figures/distilbert_priority_confusion_matrix.png
+/reports/figures/rag_eval_detail.csv
+# plain-text classification reports are a convenience side-effect, not tracked
+/reports/figures/*_classification_report.txt
+
