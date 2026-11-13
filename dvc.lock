@@ -97,3 +97,57 @@ stages:
       hash: md5
       md5: 117512380509d8d9dc49d2d3533d44ef
       size: 215
+  rag_index:
+    cmd: python -m src.rag.build_index
+    deps:
+    - path: configs/rag.yaml
+      hash: md5
+      md5: 67b10ac84f2a86ff47ee6a42076c5376
+      size: 1549
+    - path: data/processed/tickets_train.parquet
+      hash: md5
+      md5: 74d7ac4346da63cf78fe446ac5ad959a
+      size: 8602635
+    - path: src/rag/build_index.py
+      hash: md5
+      md5: bfa2e73a6098657973b1710ffa141c73
+      size: 1976
+    outs:
+    - path: data/vector_store
+      hash: md5
+      md5: e5ea2b223fb0ccbad07c9a3714fc2c94.dir
+      size: 51118202
+      nfiles: 6
+  rag_eval:
+    cmd: python -m src.rag.evaluate
+    deps:
+    - path: configs/rag.yaml
+      hash: md5
+      md5: 67b10ac84f2a86ff47ee6a42076c5376
+      size: 1549
+    - path: data/processed/tickets_test.parquet
+      hash: md5
+      md5: ee0526a43e1ba60b0137b553cb54250c
+      size: 1881803
+    - path: data/vector_store
+      hash: md5
+      md5: e5ea2b223fb0ccbad07c9a3714fc2c94.dir
+      size: 51118202
+      nfiles: 6
+    - path: src/rag/evaluate.py
+      hash: md5
+      md5: ac4563a80d8ba5d99b41906cbf9c81b0
+      size: 2872
+    - path: src/rag/generate.py
+      hash: md5
+      md5: 1a93057011b0f896fa3de29300ff53fe
+      size: 7361
+    outs:
+    - path: reports/figures/rag_eval_detail.csv
+      hash: md5
+      md5: 0e3632b448a5379cf001ffa139aee260
+      size: 1363
+    - path: reports/metrics/rag_metrics.json
+      hash: md5
+      md5: 385f91ffeec65db081afea88f72fbf3d
+      size: 130
